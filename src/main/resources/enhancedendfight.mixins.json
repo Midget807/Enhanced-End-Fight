@@ -2,11 +2,22 @@
   "required": true,
   "package": "net.midget807.enhancedendfight.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": [],
+  "mixins": [
+    "BossEventMixin",
+    "EnderDragonFightMixin",
+    "EnderDragonMixin",
+    "ServerBossEventMixin",
+    "access.EnderDragonAccessor",
+    "access.EnderDragonPhaseAccessor"
+  ],
   "injectors": {
     "defaultRequire": 1
   },
   "overwrites": {
     "requireAnnotations": true
-  }
+  },
+  "client": [
+    "BossHealthOverlayMixin",
+    "access.LevelRendererAccessor"
+  ]
 }

@@ -1,6 +1,9 @@
 package net.midget807.enhancedendfight;
 
 import com.mojang.logging.LogUtils;
+import net.midget807.enhancedendfight.registry.ModEnderDragonPhases;
+import net.midget807.enhancedendfight.registry.ModItems;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -20,6 +23,10 @@ public class EnhancedEndFightMain {
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
 
+    public static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath(MODID, path);
+    }
+
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
@@ -27,11 +34,13 @@ public class EnhancedEndFightMain {
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
 
-
         // Register ourselves for server and other game events we are interested in.
         // Note that this is necessary if and only if we want *this* class (EnhancedEndFight) to respond directly to events.
         // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
         NeoForge.EVENT_BUS.register(this);
+
+        ModItems.register(modEventBus);
+        ModEnderDragonPhases.registerModEnderDragonPhases(modEventBus);
 
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
