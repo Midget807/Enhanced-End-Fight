@@ -5,9 +5,14 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.midget807.enhancedendfight.EnhancedEndFightMain;
 import net.midget807.enhancedendfight.registry.ModEnderDragonPhases;
+import net.midget807.enhancedendfight.util.injector.TenacityData;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializer;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
@@ -34,9 +39,25 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EnderDragon.class)
-public abstract class EnderDragonMixin extends Mob implements Enemy {
+public abstract class EnderDragonMixin extends Mob implements Enemy, TenacityData {
     @Unique
     private static final ResourceLocation MAX_HEALTH_MODIFIER_ID = EnhancedEndFightMain.id("tenacity_damage");
+    private static final EntityDataAccessor<Float> TENACITY = SynchedEntityData.defineId(EnderDragon.class, EntityDataSerializers.FLOAT);
+
+    @Override
+    public void setTenacityData(float value) {
+        this.getEntityData().set(TENACITY, value);
+    }
+
+    @Override
+    public float getTenacityData() {
+        return this.getEntityData().get(TENACITY);
+    }
+
+    @Inject(method = "defineSynchedData", at = @At("HEAD"))
+    private void enhancedEndFight$addCustomSyncedData(SynchedEntityData.Builder builder, CallbackInfo ci) {
+        builder.define(TENACITY, 0.0f);
+    }
 
     @Shadow
     @Final
