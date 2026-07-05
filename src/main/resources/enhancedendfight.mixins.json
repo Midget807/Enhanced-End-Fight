@@ -8,6 +8,7 @@
     "EnderDragonMixin",
     "ServerBossEventMixin",
     "access.EnderDragonAccessor",
+    "access.EndDragonFightAccessor",
     "access.EnderDragonPhaseAccessor"
   ],
   "injectors": {
@@ -18,6 +19,7 @@
   },
   "client": [
     "BossHealthOverlayMixin",
+    "access.BossHealthOverlayAccessor",
     "access.LevelRendererAccessor"
   ]
 }
