@@ -3,8 +3,10 @@ package net.midget807.enhancedendfight.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.midget807.enhancedendfight.EnhancedEndFightMain;
 import net.midget807.enhancedendfight.entity.client.ClientTenacityDataHolder;
+import net.midget807.enhancedendfight.mixin.access.BossEventAccessor;
 import net.midget807.enhancedendfight.util.injector.InvertedBar;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -46,27 +48,6 @@ public abstract class BossHealthOverlayMixin {
     @Final
     private static int BAR_HEIGHT;
 
-    @ModifyArgs(method = "drawBar(Lnet/minecraft/client/gui/GuiGraphics;IILnet/minecraft/world/BossEvent;I[Lnet/minecraft/resources/ResourceLocation;[Lnet/minecraft/resources/ResourceLocation;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIIIIIII)V", ordinal = 0))
-    private void enhancedEndFight$invertBossBar(Args args, @Local(argsOnly = true) BossEvent bossEvent, @Local(argsOnly = true, ordinal = 2) int progress) {
-        if (((InvertedBar) bossEvent).isInverted()) {
-            args.set(3, 182 - progress);
-        }
-    }
-    @ModifyArgs(method = "drawBar(Lnet/minecraft/client/gui/GuiGraphics;IILnet/minecraft/world/BossEvent;I[Lnet/minecraft/resources/ResourceLocation;[Lnet/minecraft/resources/ResourceLocation;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIIIIIII)V", ordinal = 1))
-    private void enhancedEndFight$invertBossBar2(Args args, @Local(argsOnly = true) BossEvent bossEvent, @Local(argsOnly = true, ordinal = 2) int progress) {
-        if (((InvertedBar) bossEvent).isInverted()) {
-            args.set(3, 182 - progress);
-        }
-    }
-
-    @WrapOperation(method = "drawBar(Lnet/minecraft/client/gui/GuiGraphics;IILnet/minecraft/world/BossEvent;I[Lnet/minecraft/resources/ResourceLocation;[Lnet/minecraft/resources/ResourceLocation;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIIIIIII)V", ordinal = 1))
-    private void enhancedEndFight$invertBossBar3(GuiGraphics instance, ResourceLocation sprite, int textureWidth, int textureHeight, int uPosition, int vPosition, int x, int y, int uWidth, int vHeight, Operation<Void> original, @Local(argsOnly = true) BossEvent bossEvent, @Local(argsOnly = true, ordinal = 2) int progress, @Local(argsOnly = true, ordinal = 1) ResourceLocation[] overlayProgressSprites) {
-        if (((InvertedBar) bossEvent).isInverted()) {
-            instance.blitSprite(overlayProgressSprites[bossEvent.getOverlay().ordinal() - 1], 182, 5, 182 - progress, 0, x, y, progress, 5);
-        } else {
-            original.call(instance, sprite, textureWidth, textureHeight, uPosition, vPosition, x, y, uWidth, vHeight);
-        }
-    }
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;guiWidth()I"))
     private void enhancedEndFight$renderTenacityBar(GuiGraphics guiGraphics, CallbackInfo ci) {
         Map<UUID, LerpingBossEvent> events = this.events;
@@ -77,16 +58,12 @@ public abstract class BossHealthOverlayMixin {
 
             float tenacityProgress = ClientTenacityDataHolder.TENACITY.getOrDefault(uuid, 0f);
 
-            int tenacityWidth = (int) (tenacityProgress * BAR_WIDTH);
+            int tenacityWidth = BAR_WIDTH - (int) (tenacityProgress * BAR_WIDTH);
             int x = guiGraphics.guiWidth() / 2 + 91;
-            guiGraphics.blitSprite(EnhancedEndFightMain.id("boss_bar/tenacity_overlay"), BAR_WIDTH, BAR_HEIGHT, BAR_WIDTH - tenacityWidth, 0, x, y, BAR_WIDTH, BAR_HEIGHT);
-            /*
-            Component component = event.getName();
-            int textWidth = this.minecraft.font.width(component);
-            int textX = guiGraphics.guiWidth() / 2 - textWidth / 2;
-            int textY = y - 9;
-            guiGraphics.drawString(this.minecraft.font, component, textX, textY, 16777215);
-            */
+            RenderSystem.enableBlend();
+            guiGraphics.blitSprite(EnhancedEndFightMain.id("boss_bar/tenacity_overlay"), BAR_WIDTH, BAR_HEIGHT, BAR_WIDTH - tenacityWidth, 0, x - tenacityWidth, y, 1, BAR_WIDTH, BAR_HEIGHT);
+            RenderSystem.disableBlend();
+
             y += 20;
         }
     }

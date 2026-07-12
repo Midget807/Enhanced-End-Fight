@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.midget807.enhancedendfight.EnhancedEndFightMain;
+import net.midget807.enhancedendfight.entity.client.ClientTenacityDataHolder;
 import net.midget807.enhancedendfight.mixin.access.EndDragonFightAccessor;
 import net.midget807.enhancedendfight.network.s2c.packet.TenacityBossBarProgressPacket;
 import net.midget807.enhancedendfight.registry.ModEnderDragonPhases;
@@ -56,7 +57,7 @@ public abstract class EnderDragonMixin extends Mob implements Enemy, TenacityDat
         this.getEntityData().set(TENACITY, value);
         if (this.getDragonFight() != null) {
             for (ServerPlayer player : ((EndDragonFightAccessor) this.getDragonFight()).getDragonEvent().getPlayers()) {
-                PacketDistributor.sendToPlayer(player, new TenacityBossBarProgressPacket(this.stringUUID, this.getTenacityData()));
+                PacketDistributor.sendToPlayer(player, new TenacityBossBarProgressPacket(((EndDragonFightAccessor) this.getDragonFight()).getDragonEvent().getId().toString(), this.getTenacityData()));
             }
         }
     }
@@ -79,6 +80,9 @@ public abstract class EnderDragonMixin extends Mob implements Enemy, TenacityDat
     @Nullable
     public abstract EndDragonFight getDragonFight();
 
+    @Shadow
+    public abstract EnderDragonPhaseManager getPhaseManager();
+
     protected EnderDragonMixin(EntityType<? extends Mob> entityType, Level level) {
         super(entityType, level);
     }
@@ -92,13 +96,18 @@ public abstract class EnderDragonMixin extends Mob implements Enemy, TenacityDat
     private void enhancedEndFight$tickCustomLogic(CallbackInfo ci) {
         if (this.getAttribute(Attributes.MAX_HEALTH).hasModifier(MAX_HEALTH_MODIFIER_ID)) {
             this.setTenacityData((float) (this.getAttributeValue(Attributes.MAX_HEALTH) / this.getAttributeBaseValue(Attributes.MAX_HEALTH)));
-            System.out.println("differ health");
         }
+        this.updateTenacity();
+    }
+
+    @Unique
+    private void updateTenacity() {
+        this.setTenacityData((float) (this.getAttributeValue(Attributes.MAX_HEALTH) / this.getAttributeBaseValue(Attributes.MAX_HEALTH)));
     }
 
     @Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/boss/enderdragon/phases/DragonPhaseInstance;doServerTick()V", ordinal = 0))
     private void enhancedEndFight$injectCustomPhases(CallbackInfo ci, @Local DragonPhaseInstance dragonPhaseInstance) {
-        if (this.getHealth() <= 0) {
+        if (this.getHealth() <= 0 && dragonPhaseInstance != ModEnderDragonPhases.STUNNED) {
             this.phaseManager.setPhase(ModEnderDragonPhases.STUNNED);
         }
     }
@@ -108,6 +117,8 @@ public abstract class EnderDragonMixin extends Mob implements Enemy, TenacityDat
         if (this.phaseManager.getCurrentPhase().getPhase() == ModEnderDragonPhases.TENACITY) {
             return this.tenacityHurt(damageSource, amount);
         }
+
+        this.updateTenacity();
         return original.call(instance, damageSource, amount);
     }
 

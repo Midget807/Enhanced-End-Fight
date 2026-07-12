@@ -7,8 +7,9 @@
     "EnderDragonFightMixin",
     "EnderDragonMixin",
     "ServerBossEventMixin",
-    "access.EnderDragonAccessor",
+    "access.BossEventAccessor",
     "access.EndDragonFightAccessor",
+    "access.EnderDragonAccessor",
     "access.EnderDragonPhaseAccessor"
   ],
   "injectors": {
