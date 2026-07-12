@@ -2,6 +2,7 @@ package net.midget807.enhancedendfight.entity;
 
 import net.midget807.enhancedendfight.registry.ModEnderDragonPhases;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
@@ -43,10 +44,16 @@ public class DragonStunnedPhase extends AbstractDragonPhaseInstance {
             this.currentPath = null;
         }
         BlockPos blockPos = this.dragon.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, this.dragon.blockPosition());
+        if (blockPos.getY() <= 20) {
+            blockPos = blockPos.atY(20);
+        }
         if (this.targetLocation == null) {
             this.targetLocation = Vec3.atBottomCenterOf(
                     blockPos
             );
+        }
+        if (this.dragon.getHealth() <= 0 && this.closeToTargetPos()) {
+            this.dragon.getPhaseManager().setPhase(ModEnderDragonPhases.TENACITY);
         }
         if (this.stunnedTime >= STUNNED_DURATION) {
             LivingEntity livingentity = this.dragon.level().getNearestPlayer(CHARGE_TARGETING, this.dragon, this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
@@ -59,6 +66,11 @@ public class DragonStunnedPhase extends AbstractDragonPhaseInstance {
                         .setTarget(new Vec3(livingentity.getX(), livingentity.getY(), livingentity.getZ()));
             }
         }
+    }
+
+    private boolean closeToTargetPos() {
+        if (this.targetLocation == null) return false;
+        return this.dragon.position().distanceToSqr(this.targetLocation) <= 5;
     }
 
     @Override
