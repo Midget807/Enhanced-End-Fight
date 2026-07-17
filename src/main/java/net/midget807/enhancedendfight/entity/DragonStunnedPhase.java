@@ -70,7 +70,7 @@ public class DragonStunnedPhase extends AbstractDragonPhaseInstance {
 
     private boolean closeToTargetPos() {
         if (this.targetLocation == null) return false;
-        return this.dragon.position().distanceToSqr(this.targetLocation) <= 5;
+        return this.dragon.position().distanceToSqr(this.targetLocation) <= 8;
     }
 
     @Override
