@@ -1,7 +1,6 @@
-package net.midget807.enhancedendfight.entity;
+package net.midget807.enhancedendfight.entity.dragon;
 
 import net.midget807.enhancedendfight.registry.ModEnderDragonPhases;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;

@@ -1,11 +1,9 @@
-package net.midget807.enhancedendfight.entity;
+package net.midget807.enhancedendfight.entity.dragon;
 
 import com.mojang.logging.LogUtils;
 import net.midget807.enhancedendfight.registry.ModEnderDragonPhases;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseInstance;

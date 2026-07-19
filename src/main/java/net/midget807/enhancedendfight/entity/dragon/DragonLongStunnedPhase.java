@@ -1,20 +1,20 @@
-package net.midget807.enhancedendfight.entity;
+package net.midget807.enhancedendfight.entity.dragon;
 
 import net.midget807.enhancedendfight.registry.ModEnderDragonPhases;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Vec3i;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseInstance;
+import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-public class DragonStunnedPhase extends AbstractDragonPhaseInstance {
-    public static final int STUNNED_DURATION = 100;
+public class DragonLongStunnedPhase extends AbstractDragonPhaseInstance {
+    public static final int STUNNED_DURATION = 200;
     private static final TargetingConditions CHARGE_TARGETING = TargetingConditions.forCombat().range(150.0);
     @Nullable
     private Path currentPath;
@@ -23,7 +23,7 @@ public class DragonStunnedPhase extends AbstractDragonPhaseInstance {
     private final TargetingConditions scanTargeting;
     private int stunnedTime;
 
-    public DragonStunnedPhase(EnderDragon dragon) {
+    public DragonLongStunnedPhase(EnderDragon dragon) {
         super(dragon);
         this.scanTargeting = TargetingConditions.forCombat().range(20.0).selector(p_352809_ -> Math.abs(p_352809_.getY() - dragon.getY()) <= 10.0);
     }
@@ -52,7 +52,7 @@ public class DragonStunnedPhase extends AbstractDragonPhaseInstance {
                     blockPos
             );
         }
-        if (this.dragon.getHealth() <= 0 && this.closeToTargetPos()) {
+        if (this.dragon.getHealth() <= 10.0f && this.closeToTargetPos()) {
             this.dragon.getPhaseManager().setPhase(ModEnderDragonPhases.TENACITY);
         }
         if (this.stunnedTime >= STUNNED_DURATION) {
@@ -96,7 +96,7 @@ public class DragonStunnedPhase extends AbstractDragonPhaseInstance {
     }
 
     @Override
-    public EnderDragonPhase<DragonStunnedPhase> getPhase() {
-        return ModEnderDragonPhases.STUNNED;
+    public EnderDragonPhase<? extends DragonPhaseInstance> getPhase() {
+        return ModEnderDragonPhases.LONG_STUNNED;
     }
 }

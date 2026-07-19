@@ -1,4 +1,4 @@
-package net.midget807.enhancedendfight.entity;
+package net.midget807.enhancedendfight.entity.dragon;
 
 import net.midget807.enhancedendfight.registry.ModEnderDragonPhases;
 import net.minecraft.core.BlockPos;
@@ -12,11 +12,11 @@ import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-public class DragonOneShotPhase extends AbstractDragonPhaseInstance {
+public class DragonOneShotLandingPhase extends AbstractDragonPhaseInstance {
     @Nullable
     private Vec3 targetLocation;
 
-    public DragonOneShotPhase(EnderDragon dragon) {
+    public DragonOneShotLandingPhase(EnderDragon dragon) {
         super(dragon);
     }
 
@@ -56,8 +56,8 @@ public class DragonOneShotPhase extends AbstractDragonPhaseInstance {
         }
 
         if (this.targetLocation.distanceToSqr(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ()) < 1.0) {
-            this.dragon.getPhaseManager().getPhase(EnderDragonPhase.SITTING_FLAMING).resetFlameCount();
-            this.dragon.getPhaseManager().setPhase(EnderDragonPhase.SITTING_SCANNING);
+            this.dragon.getPhaseManager().getPhase(ModEnderDragonPhases.ONE_SHOT_TIMER).begin();
+            this.dragon.getPhaseManager().setPhase(ModEnderDragonPhases.ONE_SHOT_SCAN);
         }
     }
 
@@ -85,7 +85,7 @@ public class DragonOneShotPhase extends AbstractDragonPhaseInstance {
     }
 
     @Override
-    public EnderDragonPhase<DragonOneShotPhase> getPhase() {
+    public EnderDragonPhase<DragonOneShotLandingPhase> getPhase() {
         return ModEnderDragonPhases.ONE_SHOT;
     }
 }

@@ -1,4 +1,4 @@
-package net.midget807.enhancedendfight.entity;
+package net.midget807.enhancedendfight.entity.dragon;
 
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;

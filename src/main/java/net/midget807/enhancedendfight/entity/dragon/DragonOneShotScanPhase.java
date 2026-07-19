@@ -1,4 +1,4 @@
-package net.midget807.enhancedendfight.entity;
+package net.midget807.enhancedendfight.entity.dragon;
 
 import net.midget807.enhancedendfight.registry.ModEnderDragonPhases;
 import net.minecraft.world.entity.LivingEntity;
@@ -8,7 +8,7 @@ import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 
 public class DragonOneShotScanPhase extends AbstractDragonPrepPhase{
-    private static final int SCANNING_IDLE_TICKS = 100;
+    private static final int SCANNING_TICKS = 50;
     private static final int ATTACK_Y_VIEW_RANGE = 300;
     private static final int ATTACK_VIEW_RANGE = 300;
     private static final int CHARGE_VIEW_RANGE = 150;
@@ -23,12 +23,13 @@ public class DragonOneShotScanPhase extends AbstractDragonPrepPhase{
 
     @Override
     public void doServerTick() {
+        super.doServerTick();
         this.scanningTime++;
         LivingEntity livingEntity = this.dragon
                 .level()
                 .getNearestPlayer(this.scanTargeting, this.dragon, this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
         if (livingEntity != null) {
-            if (this.scanningTime >= 800) {
+            if (this.scanningTime > SCANNING_TICKS) {
                 this.dragon.getPhaseManager().setPhase(ModEnderDragonPhases.ONE_SHOT_ATTACK);
             }
         }
