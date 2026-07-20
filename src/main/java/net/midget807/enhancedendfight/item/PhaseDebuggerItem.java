@@ -11,7 +11,7 @@ import net.minecraft.world.level.Level;
 
 import java.util.List;
 
-public class PhaseDebuggerItem extends Item {
+public class PhaseDebuggerItem extends SuccessItem {
     private final EnderDragonPhase<?> dragonPhase;
 
     public PhaseDebuggerItem(Properties properties, EnderDragonPhase<?> dragonPhase) {
@@ -25,6 +25,6 @@ public class PhaseDebuggerItem extends Item {
         dragons.forEach(dragon -> {
             dragon.getPhaseManager().setPhase(dragonPhase);
         });
-        return InteractionResultHolder.success(player.getItemInHand(usedHand));
+        return super.use(level, player, usedHand);
     }
 }

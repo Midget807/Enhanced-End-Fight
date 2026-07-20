@@ -14,7 +14,7 @@ import net.minecraft.world.level.Level;
 
 import java.util.List;
 
-public class PhaseQueryItem extends Item {
+public class PhaseQueryItem extends SuccessItem {
     public PhaseQueryItem(Properties properties) {
         super(properties);
     }
@@ -29,6 +29,6 @@ public class PhaseQueryItem extends Item {
                 dragon.addEffect(new MobEffectInstance(MobEffects.GLOWING, 10, 0, false, false));
             });
         }
-        return InteractionResultHolder.success(player.getItemInHand(usedHand));
+        return super.use(level, player, usedHand);
     }
 }

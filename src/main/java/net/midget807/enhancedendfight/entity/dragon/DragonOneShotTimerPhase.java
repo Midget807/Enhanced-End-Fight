@@ -50,6 +50,9 @@ public class DragonOneShotTimerPhase extends AbstractDragonOneShotPhase{
     public void begin() {
         this.timer = 0;
         EndDragonFight fight = this.dragon.getDragonFight();
+        if (fight != null) {
+
+        }
     }
 
     @Override

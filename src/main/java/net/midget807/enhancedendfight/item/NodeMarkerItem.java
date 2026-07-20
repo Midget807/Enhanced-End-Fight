@@ -14,7 +14,7 @@ import net.minecraft.world.level.Level;
 import java.util.Arrays;
 import java.util.List;
 
-public class NodeMarkerItem extends Item {
+public class NodeMarkerItem extends SuccessItem {
     public NodeMarkerItem(Properties properties) {
         super(properties);
     }
@@ -30,6 +30,6 @@ public class NodeMarkerItem extends Item {
                 }
             });
         });
-        return InteractionResultHolder.success(player.getItemInHand(usedHand));
+        return super.use(level, player, usedHand);
     }
 }

@@ -2,6 +2,7 @@ package net.midget807.enhancedendfight.registry;
 
 import net.midget807.enhancedendfight.EnhancedEndFightMain;
 import net.midget807.enhancedendfight.item.NodeMarkerItem;
+import net.midget807.enhancedendfight.item.OneShotCrystalSpawnerItem;
 import net.midget807.enhancedendfight.item.PhaseDebuggerItem;
 import net.midget807.enhancedendfight.item.PhaseQueryItem;
 import net.minecraft.world.item.Item;
@@ -21,6 +22,8 @@ public class ModItems {
             () -> new PhaseQueryItem(new Item.Properties()));
     public static final DeferredItem<NodeMarkerItem> NODE_MARKER = registerModItem("node_marker",
             () -> new NodeMarkerItem(new Item.Properties()));
+    public static final DeferredItem<OneShotCrystalSpawnerItem> ONE_SHOT_CRYSTAL_SPAWNER = registerModItem("one_shot_crystal_spawner",
+            () -> new OneShotCrystalSpawnerItem(new Item.Properties()));
 
     public static final DeferredItem<PhaseDebuggerItem> ONE_SHOT = registerModItem("one_shot",
             () -> new PhaseDebuggerItem(new Item.Properties(),ModEnderDragonPhases.ONE_SHOT_APPROACH));
