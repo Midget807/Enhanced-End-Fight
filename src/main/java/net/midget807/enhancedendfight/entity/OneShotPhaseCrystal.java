@@ -1,5 +1,6 @@
 package net.midget807.enhancedendfight.entity;
 
+import net.midget807.enhancedendfight.registry.ModEntities;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
@@ -10,7 +11,4 @@ public class OneShotPhaseCrystal extends EndCrystal {
         super(entityType, level);
     }
 
-    public OneShotPhaseCrystal(Level level, double x, double y, double z) {
-        super(level, x, y, z);
-    }
 }

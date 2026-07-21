@@ -2,6 +2,7 @@ package net.midget807.enhancedendfight;
 
 import com.mojang.logging.LogUtils;
 import net.midget807.enhancedendfight.registry.ModEnderDragonPhases;
+import net.midget807.enhancedendfight.registry.ModEntities;
 import net.midget807.enhancedendfight.registry.ModItems;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
@@ -42,6 +43,7 @@ public class EnhancedEndFightMain {
         NeoForge.EVENT_BUS.register(this);
 
         ModItems.register(modEventBus);
+        ModEntities.register(modEventBus);
         ModEnderDragonPhases.registerModEnderDragonPhases(modEventBus);
 
         // Register the item to a creative tab
