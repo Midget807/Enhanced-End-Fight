@@ -1,10 +1,12 @@
 package net.midget807.enhancedendfight.item;
 
+import net.midget807.enhancedendfight.entity.OneShotPhaseCrystal;
 import net.midget807.enhancedendfight.util.BlockPosHighlights;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.player.Player;
@@ -31,16 +33,16 @@ public class OneShotCrystalSpawnerItem extends SuccessItem {
             EndDragonFight fight = dragon.getDragonFight();
             if (fight != null) {
                 if (!level.isClientSide) {
+                    if (player.isShiftKeyDown()) {
+                        BlockPosHighlights.clear();
+                        return;
+                    }
                     List<SpikeFeature.EndSpike> spikes = SpikeFeature.getSpikesForLevel((ServerLevel) level);
                     List<BlockPos> towerCrystalPositions = new ArrayList<>();
                     Map<Integer, BlockPos> oneShotCrystalPositions = new HashMap<>();
                     for (SpikeFeature.EndSpike spike : spikes) {
                         BlockPos pos = new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ());
-                        if (player.isShiftKeyDown()) {
-                            towerCrystalPositions.remove(pos);
-                        } else {
-                            towerCrystalPositions.add(pos);
-                        }
+                        towerCrystalPositions.add(pos);
                     }
                     List<Integer> allowedPositions = new ArrayList<>();
                     for (int i = 0; i < towerCrystalPositions.size(); i++) {
@@ -79,9 +81,18 @@ public class OneShotCrystalSpawnerItem extends SuccessItem {
                         BlockPosHighlights.add(entry.getValue());
                         List<EndCrystal> crystalPresentAtTower = level.getEntitiesOfClass(EndCrystal.class, new AABB(entry.getValue()));
                         if (!crystalPresentAtTower.isEmpty()) {
-                            //todo spawn a custom crystal with the boolean to replace on discard
+                            for (EndCrystal crystal : crystalPresentAtTower) {
+                                crystal.discard();
+                            }
+                            OneShotPhaseCrystal crystal = new OneShotPhaseCrystal(level, entry.getValue());
+                            crystal.setShowBottom(true);
+                            crystal.setShouldReplaceOnDeath(true);
+                            level.addFreshEntity(crystal);
                         } else {
-                            //todo spawn a custom crystal with no replace on discard
+                            OneShotPhaseCrystal crystal = new OneShotPhaseCrystal(level, entry.getValue());
+                            crystal.setShowBottom(true);
+                            crystal.setShouldReplaceOnDeath(false);
+                            level.addFreshEntity(crystal);
                         }
                     }
                 }

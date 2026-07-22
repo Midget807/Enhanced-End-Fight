@@ -7,7 +7,7 @@ import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 
-public class DragonOneShotScanPhase extends AbstractDragonPrepPhase{
+public class DragonOneShotScanPhase extends AbstractDragonOneShotPhase {
     private static final int SCANNING_TICKS = 50;
     private static final int ATTACK_Y_VIEW_RANGE = 300;
     private static final int ATTACK_VIEW_RANGE = 300;

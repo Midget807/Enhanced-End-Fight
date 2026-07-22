@@ -12,4 +12,6 @@ public interface OneShotPhaseCrystals {
     int getOneShotCrystalsAlive();
 
     Map<BlockPos, EndCrystal> getVanillaEndCrystals();
+
+    void updateOneShotPhaseCrystals();
 }

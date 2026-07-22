@@ -18,8 +18,12 @@ public class ModEntities {
             DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, EnhancedEndFightMain.MODID);
 
     public static final Supplier<EntityType<OneShotPhaseCrystal>> ONE_SHOT_CRYSTAL =
-            ENTITY_TYPES.register("one_shot_crystal", () -> EntityType.Builder.of(OneShotPhaseCrystal::new, MobCategory.MISC)
-                    .sized(2.0f, 2.0f).build("one_shot_crystal"));
+            ENTITY_TYPES.register("one_shot_crystal", () -> EntityType.Builder.<OneShotPhaseCrystal>of(OneShotPhaseCrystal::new, MobCategory.MISC)
+                    .sized(2.0f, 2.0f)
+                    .fireImmune()
+                    .clientTrackingRange(16)
+                    .updateInterval(Integer.MAX_VALUE)
+                    .build("one_shot_crystal"));
 
     public static void register (IEventBus bus) {
         ENTITY_TYPES.register(bus);
