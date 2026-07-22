@@ -13,6 +13,8 @@ import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.dimension.end.EndDragonFight;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
 import net.minecraft.world.level.levelgen.feature.SpikeFeature;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
@@ -43,7 +45,7 @@ public class DragonOneShotTimerPhase extends AbstractDragonOneShotPhase{
         if (this.targetToKill == null || !this.dragon.level().players().contains(this.targetToKill)) {
             this.rescanForTarget();
         }
-        if (this.dragon.getDragonFight() != null && ((OneShotPhaseCrystals) this.dragon.getDragonFight()).getOneShotCrystalsAlive() <= 0) {
+        if (this.timer >= 20 && this.dragon.getDragonFight() != null && ((OneShotPhaseCrystals) this.dragon.getDragonFight()).getOneShotPhaseCrystals().isEmpty()) {
             this.dragon.getPhaseManager().setPhase(ModEnderDragonPhases.STUNNED);
         }
         if (timer >= ONE_SHOT_PHASE_DURATION) {
@@ -63,6 +65,7 @@ public class DragonOneShotTimerPhase extends AbstractDragonOneShotPhase{
         this.timer = 0;
         EndDragonFight fight = this.dragon.getDragonFight();
         if (fight != null) {
+            System.out.println("crystalSize: " + ((OneShotPhaseCrystals) fight).getOneShotPhaseCrystals().size());
             if (!this.dragon.level().isClientSide) {
                 List<SpikeFeature.EndSpike> spikes = SpikeFeature.getSpikesForLevel((ServerLevel) this.dragon.level());
                 List<BlockPos> towerCrystalPositions = new ArrayList<>();
@@ -90,8 +93,14 @@ public class DragonOneShotTimerPhase extends AbstractDragonOneShotPhase{
                         allowedPositions.remove((Object) (random - 1));
                     }
                 }
+                BlockPos beamPos = this.dragon.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.getLocation(new BlockPos(
+                        this.dragon.getFightOrigin().getX(),
+                        this.dragon.getFightOrigin().getY(),
+                        this.dragon.getFightOrigin().getZ()
+                )));
+                beamPos = beamPos.above(50);
                 for (Map.Entry<Integer, BlockPos> entry : oneShotCrystalPositions.entrySet()) {
-                    List<EndCrystal> crystalPresentAtTower = this.dragon.level().getEntitiesOfClass(EndCrystal.class, new AABB(entry.getValue()));
+                    List<EndCrystal> crystalPresentAtTower = this.dragon.level().getEntitiesOfClass(EndCrystal.class, new AABB(entry.getValue()).inflate(1.0));
                     if (!crystalPresentAtTower.isEmpty()) {
                         for (EndCrystal crystal : crystalPresentAtTower) {
                             crystal.discard();
@@ -99,15 +108,19 @@ public class DragonOneShotTimerPhase extends AbstractDragonOneShotPhase{
                         OneShotPhaseCrystal crystal = new OneShotPhaseCrystal(this.dragon.level(), entry.getValue());
                         crystal.setShowBottom(true);
                         crystal.setShouldReplaceOnDeath(true);
+                        crystal.setBeamTarget(beamPos);
                         this.dragon.level().addFreshEntity(crystal);
                     } else {
                         OneShotPhaseCrystal crystal = new OneShotPhaseCrystal(this.dragon.level(), entry.getValue());
                         crystal.setShowBottom(true);
                         crystal.setShouldReplaceOnDeath(false);
+                        crystal.setBeamTarget(beamPos);
                         this.dragon.level().addFreshEntity(crystal);
                     }
                 }
             }
+
+            ((OneShotPhaseCrystals) fight).updateOneShotPhaseCrystals();
         }
     }
 

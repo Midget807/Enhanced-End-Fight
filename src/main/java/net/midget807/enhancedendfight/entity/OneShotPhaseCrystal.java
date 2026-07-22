@@ -1,8 +1,10 @@
 package net.midget807.enhancedendfight.entity;
 
 import net.midget807.enhancedendfight.registry.ModEntities;
+import net.midget807.enhancedendfight.util.injector.OneShotPhaseCrystals;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -10,6 +12,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.dimension.end.EndDragonFight;
 import net.minecraft.world.level.gameevent.GameEvent;
 
 public class OneShotPhaseCrystal extends EndCrystal {
@@ -34,6 +37,7 @@ public class OneShotPhaseCrystal extends EndCrystal {
             endCrystal.setShowBottom(true);
             this.level().addFreshEntity(endCrystal);
         }
+        this.onOneShotCrystalDestroyed(this.damageSources().generic());
     }
 
     @Override
@@ -55,9 +59,20 @@ public class OneShotPhaseCrystal extends EndCrystal {
                     endCrystal.setShowBottom(true);
                     this.level().addFreshEntity(endCrystal);
                 }
+                this.onOneShotCrystalDestroyed(source);
             }
 
             return true;
+        }
+    }
+
+    private void onOneShotCrystalDestroyed(DamageSource source) {
+        if (this.level() instanceof ServerLevel) {
+            EndDragonFight enddragonfight = ((ServerLevel)this.level()).getDragonFight();
+            if (enddragonfight != null) {
+                enddragonfight.onCrystalDestroyed(this, source);
+                ((OneShotPhaseCrystals) enddragonfight).updateOneShotPhaseCrystals();
+            }
         }
     }
 

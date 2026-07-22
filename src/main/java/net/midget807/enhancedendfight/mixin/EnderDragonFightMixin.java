@@ -61,12 +61,14 @@ public abstract class EnderDragonFightMixin implements OneShotPhaseCrystals {
     @Override
     public void updateOneShotPhaseCrystals() {
         List<SpikeFeature.EndSpike> spikes = SpikeFeature.getSpikesForLevel((ServerLevel) level);
-        this.oneShotPhaseCrystals.clear();
+        List<OneShotPhaseCrystal> buffer = new ArrayList<>();
         for (SpikeFeature.EndSpike spike : spikes) {
             BlockPos pos = new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ());
-            List<OneShotPhaseCrystal> onShotCrystalPresentAtTower = level.getEntitiesOfClass(OneShotPhaseCrystal.class, new AABB(pos));
-            this.oneShotPhaseCrystals.addAll(onShotCrystalPresentAtTower);
+            List<OneShotPhaseCrystal> onShotCrystalPresentAtTower = level.getEntitiesOfClass(OneShotPhaseCrystal.class, new AABB(pos).inflate(1));
+            buffer.addAll(onShotCrystalPresentAtTower);
         }
+        this.oneShotPhaseCrystals = buffer;
+        System.out.println("crystalSize: " + this.oneShotPhaseCrystals.size());
     }
 
     @Inject(method = "updateCrystalCount", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;getEntitiesOfClass(Ljava/lang/Class;Lnet/minecraft/world/phys/AABB;)Ljava/util/List;"))
