@@ -103,6 +103,7 @@ public class DragonOneShotTimerPhase extends AbstractDragonOneShotPhase{
                     } else {
                         OneShotPhaseCrystal crystal = new OneShotPhaseCrystal(this.dragon.level(), entry.getValue());
                         crystal.setShowBottom(true);
+                        crystal.setShouldReplaceOnDeath(false);
                         this.dragon.level().addFreshEntity(crystal);
                     }
                 }
