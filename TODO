@@ -1,0 +1,6 @@
+//todo one shot kill part and prompts
+//todo melee attack phase
+//todo no melee dragon damage for certain phases -> use an interface for an abstract custom class then have specific classes override for noMeleeDamage
+//todo increase health by 100%
+//todo damage resistance phases
+//todo sequence phases
