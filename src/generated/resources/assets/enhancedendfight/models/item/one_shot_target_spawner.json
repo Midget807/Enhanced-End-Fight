@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "enhancedendfight:item/one_shot_target_spawner"
+  }
+}
