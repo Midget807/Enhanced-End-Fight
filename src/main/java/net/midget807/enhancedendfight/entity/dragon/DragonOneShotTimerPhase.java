@@ -3,9 +3,16 @@ package net.midget807.enhancedendfight.entity.dragon;
 import net.midget807.enhancedendfight.entity.OneShotPhaseCrystal;
 import net.midget807.enhancedendfight.registry.ModEnderDragonPhases;
 import net.midget807.enhancedendfight.util.injector.OneShotPhaseCrystals;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
@@ -27,30 +34,71 @@ import java.util.Map;
 public class DragonOneShotTimerPhase extends AbstractDragonOneShotPhase{
     public static final int ONE_SHOT_PHASE_DURATION = 800;
     private int timer;
+    private int tickDelta;
     @Nullable
     private Player targetToKill;
     private final TargetingConditions scanTargeting;
+    private final ServerBossEvent oneShotEvent = new ServerBossEvent(Component.empty(), BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.PROGRESS);
 
     public DragonOneShotTimerPhase(EnderDragon dragon) {
         super(dragon);
-        this.scanTargeting = TargetingConditions.forCombat().range(300.0);
+        this.scanTargeting = TargetingConditions.forCombat().range(400.0);
     }
 
     @Override
     public void doServerTick() {
         timer++;
+        tickDelta++;
+        this.oneShotEvent.setProgress((float) this.timer / ONE_SHOT_PHASE_DURATION);
+        List<ServerPlayer> alreadyAddedToEvent = this.oneShotEvent.getPlayers().stream().toList();
+        for (Player player : this.dragon.level().players()) {
+            ServerPlayer serverPlayer = (ServerPlayer) player;
+            if (!alreadyAddedToEvent.contains(serverPlayer) && serverPlayer.distanceToSqr(this.dragon) <= 22500) {
+                this.oneShotEvent.addPlayer(serverPlayer);
+            }
+            if (alreadyAddedToEvent.contains(serverPlayer) && serverPlayer.distanceToSqr(this.dragon) > 22500) {
+                this.oneShotEvent.removePlayer(serverPlayer);
+            }
+        }
         targetToKill = this.dragon
                 .level()
                 .getNearestPlayer(this.scanTargeting, this.dragon, this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
         if (this.targetToKill == null || !this.dragon.level().players().contains(this.targetToKill)) {
             this.rescanForTarget();
+            System.out.println("rescanning");
         }
+        if (targetToKill != null) {
+            this.targetToKill.addEffect(new MobEffectInstance(MobEffects.GLOWING, 10, 0, false, false, false));
+        }
+
         if (this.timer >= 20 && this.dragon.getDragonFight() != null && ((OneShotPhaseCrystals) this.dragon.getDragonFight()).getOneShotPhaseCrystals().isEmpty()) {
-            this.dragon.getPhaseManager().setPhase(ModEnderDragonPhases.STUNNED);
+            this.dragon.getPhaseManager().setPhase(ModEnderDragonPhases.LONG_STUNNED);
+            if (this.dragon.getDragonFight() != null) {
+                ((OneShotPhaseCrystals) this.dragon.getDragonFight()).clearOneShotPhaseCrystals();
+            }
+            this.oneShotEvent.removeAllPlayers();
+            this.timer = 0;
         }
         if (timer >= ONE_SHOT_PHASE_DURATION) {
+            if (this.dragon.getDragonFight() != null) {
+                ((OneShotPhaseCrystals) this.dragon.getDragonFight()).clearOneShotPhaseCrystals();
+            }
+            this.oneShotEvent.removeAllPlayers();
             this.dragon.getPhaseManager().getPhase(ModEnderDragonPhases.ONE_SHOT_KILL).setTargetToKill(targetToKill);
             this.dragon.getPhaseManager().setPhase(ModEnderDragonPhases.ONE_SHOT_KILL);
+        }
+        if (tickDelta == 10) {
+            if (this.targetToKill != null) {
+                this.targetToKill.displayClientMessage(Component.literal("you are going to die").withStyle(ChatFormatting.BOLD).withStyle(ChatFormatting.RED), true);
+            }
+        }
+        if (tickDelta % 20 == 0) {
+            tickDelta = 0;
+        }
+        if (targetToKill == null) {
+            System.out.println("targetToKill is null");
+        } else  {
+            System.out.println("targetToKill: " + targetToKill.getName());
         }
     }
 
@@ -65,7 +113,6 @@ public class DragonOneShotTimerPhase extends AbstractDragonOneShotPhase{
         this.timer = 0;
         EndDragonFight fight = this.dragon.getDragonFight();
         if (fight != null) {
-            System.out.println("crystalSize: " + ((OneShotPhaseCrystals) fight).getOneShotPhaseCrystals().size());
             if (!this.dragon.level().isClientSide) {
                 List<SpikeFeature.EndSpike> spikes = SpikeFeature.getSpikesForLevel((ServerLevel) this.dragon.level());
                 List<BlockPos> towerCrystalPositions = new ArrayList<>();

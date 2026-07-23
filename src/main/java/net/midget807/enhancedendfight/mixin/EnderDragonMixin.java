@@ -4,36 +4,33 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.midget807.enhancedendfight.EnhancedEndFightMain;
-import net.midget807.enhancedendfight.entity.client.ClientTenacityDataHolder;
 import net.midget807.enhancedendfight.mixin.access.EndDragonFightAccessor;
 import net.midget807.enhancedendfight.network.s2c.packet.TenacityBossBarProgressPacket;
 import net.midget807.enhancedendfight.registry.ModEnderDragonPhases;
 import net.midget807.enhancedendfight.util.injector.TenacityData;
-import net.minecraft.core.Holder;
 import net.minecraft.core.Vec3i;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
+import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhaseManager;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.end.EndDragonFight;
-import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.spongepowered.asm.mixin.Final;
@@ -42,7 +39,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
 
@@ -89,7 +88,19 @@ public abstract class EnderDragonMixin extends Mob implements Enemy, TenacityDat
 
     @Override
     public boolean isDeadOrDying() {
-        return this.getAttribute(Attributes.MAX_HEALTH).getValue() <= 2.0;
+        return this.getAttribute(Attributes.MAX_HEALTH).getValue() <= 1.0;
+    }
+
+    @Inject(method = "addEffect", at = @At("HEAD"), cancellable = true)
+    private void enhancedEndFight$actuallyAddEffect(MobEffectInstance effectInstance, Entity entity, CallbackInfoReturnable<Boolean> cir) {
+        if (effectInstance.is(MobEffects.GLOWING)) {
+            cir.setReturnValue(super.addEffect(effectInstance, entity));
+        }
+    }
+
+    @ModifyArg(method = "createAttributes", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ai/attributes/AttributeSupplier$Builder;add(Lnet/minecraft/core/Holder;D)Lnet/minecraft/world/entity/ai/attributes/AttributeSupplier$Builder;"), index = 1)
+    private static double enhancedEndFight$buffDragon(double baseValue) {
+        return 300.0;
     }
 
     @Inject(method = "aiStep", at = @At("HEAD"))
@@ -107,6 +118,9 @@ public abstract class EnderDragonMixin extends Mob implements Enemy, TenacityDat
 
     @Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/boss/enderdragon/phases/DragonPhaseInstance;doServerTick()V", ordinal = 0))
     private void enhancedEndFight$injectCustomPhases(CallbackInfo ci, @Local DragonPhaseInstance dragonPhaseInstance) {
+        if (this.getHealth() > this.getMaxHealth()) {
+            this.setHealth(this.getMaxHealth());
+        }
         if (this.getHealth() <= 0 && dragonPhaseInstance != ModEnderDragonPhases.STUNNED) {
             this.phaseManager.setPhase(ModEnderDragonPhases.STUNNED);
         }
@@ -124,6 +138,9 @@ public abstract class EnderDragonMixin extends Mob implements Enemy, TenacityDat
 
     @Unique
     private boolean tenacityHurt(DamageSource source, float amount) {
+        if (this.phaseManager.getCurrentPhase().getPhase() == EnderDragonPhase.DYING) {
+            return false;
+        }
         if (this.isInvulnerableTo(source)) {
             return false;
         } else if (this.level().isClientSide) {
@@ -149,6 +166,11 @@ public abstract class EnderDragonMixin extends Mob implements Enemy, TenacityDat
             this.level().broadcastDamageEvent(this, source);
             this.markHurt();
             this.playHurtSound(source);
+            if (this.getMaxHealth() <= 1.0) {
+                health.addOrReplacePermanentModifier(new AttributeModifier(MAX_HEALTH_MODIFIER_ID, 1.0, AttributeModifier.Operation.ADD_VALUE));
+                this.setHealth(this.getMaxHealth());
+                this.phaseManager.setPhase(EnderDragonPhase.DYING);
+            }
             return true;
         }
     }

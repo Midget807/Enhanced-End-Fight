@@ -13,7 +13,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 public class DragonStunnedPhase extends AbstractDragonPhaseInstance {
-    public static final int STUNNED_DURATION = 100;
+    public static final int STUNNED_DURATION = 200;
     private static final TargetingConditions CHARGE_TARGETING = TargetingConditions.forCombat().range(150.0);
     @Nullable
     private Path currentPath;

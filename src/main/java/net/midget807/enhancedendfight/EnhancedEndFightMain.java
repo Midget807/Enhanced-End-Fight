@@ -1,6 +1,7 @@
 package net.midget807.enhancedendfight;
 
 import com.mojang.logging.LogUtils;
+import net.midget807.enhancedendfight.registry.ModDamageTypes;
 import net.midget807.enhancedendfight.registry.ModEnderDragonPhases;
 import net.midget807.enhancedendfight.registry.ModEntities;
 import net.midget807.enhancedendfight.registry.ModItems;

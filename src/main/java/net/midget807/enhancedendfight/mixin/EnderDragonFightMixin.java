@@ -5,16 +5,16 @@ import com.llamalad7.mixinextras.sugar.Local;
 import net.midget807.enhancedendfight.entity.OneShotPhaseCrystal;
 import net.midget807.enhancedendfight.util.injector.OneShotPhaseCrystals;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.level.dimension.end.EndDragonFight;
 import net.minecraft.world.level.levelgen.feature.SpikeFeature;
 import net.minecraft.world.phys.AABB;
-import org.checkerframework.checker.units.qual.A;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -64,11 +64,23 @@ public abstract class EnderDragonFightMixin implements OneShotPhaseCrystals {
         List<OneShotPhaseCrystal> buffer = new ArrayList<>();
         for (SpikeFeature.EndSpike spike : spikes) {
             BlockPos pos = new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ());
-            List<OneShotPhaseCrystal> onShotCrystalPresentAtTower = level.getEntitiesOfClass(OneShotPhaseCrystal.class, new AABB(pos).inflate(1));
-            buffer.addAll(onShotCrystalPresentAtTower);
+            List<OneShotPhaseCrystal> oneShotCrystalPresentAtTower = level.getEntitiesOfClass(OneShotPhaseCrystal.class, new AABB(pos).inflate(1));
+            buffer.addAll(oneShotCrystalPresentAtTower);
         }
         this.oneShotPhaseCrystals = buffer;
         System.out.println("crystalSize: " + this.oneShotPhaseCrystals.size());
+    }
+
+    @Override
+    public void clearOneShotPhaseCrystals() {
+        List<SpikeFeature.EndSpike> spikes = SpikeFeature.getSpikesForLevel((ServerLevel) level);
+        for (SpikeFeature.EndSpike spike : spikes) {
+            BlockPos pos = new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ());
+            List<OneShotPhaseCrystal> oneShotCrystalPresentAtTower = level.getEntitiesOfClass(OneShotPhaseCrystal.class, new AABB(pos).inflate(2));
+            oneShotCrystalPresentAtTower.forEach(oneShotPhaseCrystal -> {
+                oneShotPhaseCrystal.kill();
+            });
+        }
     }
 
     @Inject(method = "updateCrystalCount", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;getEntitiesOfClass(Ljava/lang/Class;Lnet/minecraft/world/phys/AABB;)Ljava/util/List;"))

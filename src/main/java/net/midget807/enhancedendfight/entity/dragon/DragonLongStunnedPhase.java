@@ -14,7 +14,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 public class DragonLongStunnedPhase extends AbstractDragonPhaseInstance {
-    public static final int STUNNED_DURATION = 200;
+    public static final int STUNNED_DURATION = 400;
     private static final TargetingConditions CHARGE_TARGETING = TargetingConditions.forCombat().range(150.0);
     @Nullable
     private Path currentPath;
@@ -70,7 +70,7 @@ public class DragonLongStunnedPhase extends AbstractDragonPhaseInstance {
 
     private boolean closeToTargetPos() {
         if (this.targetLocation == null) return false;
-        return this.dragon.position().distanceToSqr(this.targetLocation) <= 8;
+        return this.dragon.position().distanceToSqr(this.targetLocation) <= 12;
     }
 
     @Override

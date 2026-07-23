@@ -1,6 +1,7 @@
 package net.midget807.enhancedendfight;
 
 import net.midget807.enhancedendfight.entity.client.OneShotPhaseCrystalRenderer;
+import net.midget807.enhancedendfight.entity.client.OneShotTargetRenderer;
 import net.midget807.enhancedendfight.registry.ModEntities;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -27,6 +28,7 @@ public class EnhancedEndFightClient {
     @SubscribeEvent
     private static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.ONE_SHOT_CRYSTAL.get(), OneShotPhaseCrystalRenderer::new);
+        event.registerEntityRenderer(ModEntities.ONE_SHOT_TARGET.get(), OneShotTargetRenderer::new);
     }
 
     @SubscribeEvent

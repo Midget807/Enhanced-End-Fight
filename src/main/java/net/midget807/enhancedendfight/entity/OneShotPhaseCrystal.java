@@ -7,6 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
@@ -49,7 +50,7 @@ public class OneShotPhaseCrystal extends EndCrystal {
         } else {
             if (!this.isRemoved() && !this.level().isClientSide) {
                 this.remove(Entity.RemovalReason.KILLED);
-                if (!source.is(DamageTypeTags.IS_EXPLOSION)) {
+                if (!source.is(DamageTypeTags.IS_EXPLOSION) || !source.is(DamageTypes.GENERIC_KILL)) {
                     DamageSource damagesource = source.getEntity() != null ? this.damageSources().explosion(this, source.getEntity()) : null;
                     this.level().explode(this, damagesource, null, this.getX(), this.getY(), this.getZ(), 6.0F, false, Level.ExplosionInteraction.BLOCK);
                 }

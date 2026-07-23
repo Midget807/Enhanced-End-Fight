@@ -6,6 +6,7 @@
     "BossEventMixin",
     "EnderDragonFightMixin",
     "EnderDragonMixin",
+    "LivingEntityMixin",
     "ServerBossEventMixin",
     "access.BossEventAccessor",
     "access.EndDragonFightAccessor",

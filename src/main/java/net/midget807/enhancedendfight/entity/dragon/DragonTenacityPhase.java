@@ -1,6 +1,8 @@
 package net.midget807.enhancedendfight.entity.dragon;
 
 import net.midget807.enhancedendfight.registry.ModEnderDragonPhases;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
@@ -24,8 +26,8 @@ public class DragonTenacityPhase extends AbstractDragonPhaseInstance {
     public void doServerTick() {
         stunnedTime++;
         this.tickDelta++;
-        if (this.tickDelta % 10 == 0) {
-            this.dragon.heal(1.0f);
+        if (this.tickDelta % 2 == 0) {
+            this.dragon.heal(2.0f);
         }
         if (this.stunnedTime >= STUNNED_DURATION) {
             LivingEntity livingentity = this.dragon.level().getNearestPlayer(CHARGE_TARGETING, this.dragon, this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
@@ -47,6 +49,7 @@ public class DragonTenacityPhase extends AbstractDragonPhaseInstance {
     public void begin() {
         this.stunnedTime = 0;
         this.tickDelta = 0;
+        this.dragon.addEffect(new MobEffectInstance(MobEffects.GLOWING, STUNNED_DURATION, 0, false, true, false));
     }
 
     @Override

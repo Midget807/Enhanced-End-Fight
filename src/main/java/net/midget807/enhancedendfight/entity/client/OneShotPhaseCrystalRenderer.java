@@ -42,7 +42,9 @@ public class OneShotPhaseCrystalRenderer extends EntityRenderer<OneShotPhaseCrys
         this.glass = modelpart.getChild("glass");
         this.cube = modelpart.getChild("cube");
         this.base = modelpart.getChild("base");
-    }public static LayerDefinition createBodyLayer() {
+    }
+
+    public static LayerDefinition createBodyLayer() {
         MeshDefinition meshdefinition = new MeshDefinition();
         PartDefinition partdefinition = meshdefinition.getRoot();
         partdefinition.addOrReplaceChild("glass", CubeListBuilder.create().texOffs(0, 0).addBox(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F), PartPose.ZERO);

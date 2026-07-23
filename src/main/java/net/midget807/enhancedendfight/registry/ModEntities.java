@@ -3,6 +3,7 @@ package net.midget807.enhancedendfight.registry;
 import net.midget807.enhancedendfight.EnhancedEndFightClient;
 import net.midget807.enhancedendfight.EnhancedEndFightMain;
 import net.midget807.enhancedendfight.entity.OneShotPhaseCrystal;
+import net.midget807.enhancedendfight.entity.OneShotTargetEntity;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -24,6 +25,13 @@ public class ModEntities {
                     .clientTrackingRange(16)
                     .updateInterval(Integer.MAX_VALUE)
                     .build("one_shot_crystal"));
+    public static final Supplier<EntityType<OneShotTargetEntity>> ONE_SHOT_TARGET =
+            ENTITY_TYPES.register("one_shot_target", () -> EntityType.Builder.<OneShotTargetEntity>of(OneShotTargetEntity::new, MobCategory.MISC)
+                    .sized(2.0f, 0.1f)
+                    .fireImmune()
+                    .clientTrackingRange(16)
+                    .updateInterval(Integer.MAX_VALUE)
+                    .build("one_shot_target"));
 
     public static void register (IEventBus bus) {
         ENTITY_TYPES.register(bus);

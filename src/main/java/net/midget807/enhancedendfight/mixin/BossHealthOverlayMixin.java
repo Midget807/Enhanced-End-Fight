@@ -61,7 +61,9 @@ public abstract class BossHealthOverlayMixin {
             int tenacityWidth = BAR_WIDTH - (int) (tenacityProgress * BAR_WIDTH);
             int x = guiGraphics.guiWidth() / 2 + 91;
             RenderSystem.enableBlend();
-            guiGraphics.blitSprite(EnhancedEndFightMain.id("boss_bar/tenacity_overlay"), BAR_WIDTH, BAR_HEIGHT, BAR_WIDTH - tenacityWidth, 0, x - tenacityWidth, y, 1, BAR_WIDTH, BAR_HEIGHT);
+            if (!event.getName().getString().isEmpty() && event.getName().getString().equals("Ender Dragon")) {
+                guiGraphics.blitSprite(EnhancedEndFightMain.id("boss_bar/tenacity_overlay"), BAR_WIDTH, BAR_HEIGHT, BAR_WIDTH - tenacityWidth, 0, x - tenacityWidth, y, 1, BAR_WIDTH, BAR_HEIGHT);
+            }
             RenderSystem.disableBlend();
 
             y += 20;
