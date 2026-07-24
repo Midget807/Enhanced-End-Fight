@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "enhancedendfight:node_marker"
+  },
+  "result": {
+    "count": 1,
+    "id": "enhancedendfight:one_shot"
+  }
+}

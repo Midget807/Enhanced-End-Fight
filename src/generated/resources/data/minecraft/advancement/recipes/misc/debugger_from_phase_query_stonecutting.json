@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_phase_query": {
+      "conditions": {
+        "items": [
+          {
+            "items": "enhancedendfight:phase_query"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "minecraft:debugger_from_phase_query_stonecutting"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_phase_query"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "minecraft:debugger_from_phase_query_stonecutting"
+    ]
+  }
+}

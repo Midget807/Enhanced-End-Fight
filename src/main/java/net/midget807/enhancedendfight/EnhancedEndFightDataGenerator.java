@@ -1,6 +1,7 @@
 package net.midget807.enhancedendfight;
 
 import net.midget807.enhancedendfight.datagen.ModItemModelProvider;
+import net.midget807.enhancedendfight.datagen.ModRecipeProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -22,5 +23,6 @@ public class EnhancedEndFightDataGenerator {
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
         generator.addProvider(event.includeClient(), new ModItemModelProvider(packOutput, existingFileHelper));
+        generator.addProvider(event.includeServer(), new ModRecipeProvider(packOutput, lookupProvider));
     }
 }

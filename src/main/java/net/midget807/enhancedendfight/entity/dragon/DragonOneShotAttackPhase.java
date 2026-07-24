@@ -7,7 +7,7 @@ import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 
 public class DragonOneShotAttackPhase extends AbstractDragonOneShotPhase {
-    private static final int ROAR_DURATION = 20;
+    private static final int ROAR_DURATION = 10;
     private int attackingTicks;
 
     public DragonOneShotAttackPhase(EnderDragon dragon) {

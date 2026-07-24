@@ -3,7 +3,10 @@ package net.midget807.enhancedendfight.datagen;
 import net.midget807.enhancedendfight.EnhancedEndFightMain;
 import net.midget807.enhancedendfight.registry.ModItems;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
+import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public class ModItemModelProvider extends ItemModelProvider {

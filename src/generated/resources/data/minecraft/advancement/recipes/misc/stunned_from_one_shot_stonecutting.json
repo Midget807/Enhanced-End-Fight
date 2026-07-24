@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_one_shot": {
+      "conditions": {
+        "items": [
+          {
+            "items": "enhancedendfight:one_shot"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "minecraft:stunned_from_one_shot_stonecutting"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_one_shot"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "minecraft:stunned_from_one_shot_stonecutting"
+    ]
+  }
+}

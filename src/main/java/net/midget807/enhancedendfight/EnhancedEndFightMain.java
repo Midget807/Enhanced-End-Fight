@@ -2,6 +2,7 @@ package net.midget807.enhancedendfight;
 
 import com.mojang.logging.LogUtils;
 import net.midget807.enhancedendfight.registry.ModDamageTypes;
+import net.midget807.enhancedendfight.registry.ModEffects;
 import net.midget807.enhancedendfight.registry.ModEnderDragonPhases;
 import net.midget807.enhancedendfight.registry.ModEntities;
 import net.midget807.enhancedendfight.registry.ModItems;
@@ -46,6 +47,7 @@ public class EnhancedEndFightMain {
         ModItems.register(modEventBus);
         ModEntities.register(modEventBus);
         ModEnderDragonPhases.registerModEnderDragonPhases(modEventBus);
+        ModEffects.register(modEventBus);
 
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);

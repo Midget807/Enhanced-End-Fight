@@ -1,6 +1,7 @@
 package net.midget807.enhancedendfight.registry;
 
 import net.midget807.enhancedendfight.EnhancedEndFightMain;
+import net.midget807.enhancedendfight.item.DebuggerItem;
 import net.midget807.enhancedendfight.item.NodeMarkerItem;
 import net.midget807.enhancedendfight.item.OneShotCrystalSpawnerItem;
 import net.midget807.enhancedendfight.item.OneShotTargetSpawnerItem;
@@ -20,6 +21,8 @@ public class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(EnhancedEndFightMain.MODID);
     public static final List<DeferredItem<? extends Item>> REGISTERED = new ArrayList<>();
 
+    public static final DeferredItem<DebuggerItem> DEBUGGER = registerModItem("debugger",
+            () -> new DebuggerItem(new Item.Properties()));
     public static final DeferredItem<PhaseQueryItem> PHASE_QUERY = registerModItem("phase_query",
             () -> new PhaseQueryItem(new Item.Properties()));
     public static final DeferredItem<NodeMarkerItem> NODE_MARKER = registerModItem("node_marker",
@@ -39,6 +42,8 @@ public class ModItems {
             () -> new PhaseDebuggerItem(new Item.Properties(), EnderDragonPhase.DYING));
     public static final DeferredItem<PhaseDebuggerItem> PERCH = registerModItem("perch",
             () -> new PhaseDebuggerItem(new Item.Properties(), EnderDragonPhase.LANDING_APPROACH));
+    public static final DeferredItem<PhaseDebuggerItem> CHARGE_PLAYER = registerModItem("charge_player",
+            () -> new PhaseDebuggerItem(new Item.Properties(), ModEnderDragonPhases.CHARGE_PLAYER));
 
     private static<T extends Item> DeferredItem<T> registerModItem(String name, Supplier<T> sup) {
         DeferredItem<T> registered = ITEMS.register(name, sup);

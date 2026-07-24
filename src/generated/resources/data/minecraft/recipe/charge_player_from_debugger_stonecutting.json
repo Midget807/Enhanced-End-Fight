@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "enhancedendfight:debugger"
+  },
+  "result": {
+    "count": 1,
+    "id": "enhancedendfight:charge_player"
+  }
+}

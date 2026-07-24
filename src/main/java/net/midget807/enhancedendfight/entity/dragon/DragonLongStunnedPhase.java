@@ -1,5 +1,6 @@
 package net.midget807.enhancedendfight.entity.dragon;
 
+import net.midget807.enhancedendfight.EnhancedEndFightMain;
 import net.midget807.enhancedendfight.registry.ModEnderDragonPhases;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,7 +14,7 @@ import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-public class DragonLongStunnedPhase extends AbstractDragonPhaseInstance {
+public class DragonLongStunnedPhase extends AbstractDragonPhaseInstance implements NoMeleeDamage {
     public static final int STUNNED_DURATION = 400;
     private static final TargetingConditions CHARGE_TARGETING = TargetingConditions.forCombat().range(150.0);
     @Nullable
@@ -40,6 +41,12 @@ public class DragonLongStunnedPhase extends AbstractDragonPhaseInstance {
     @Override
     public void doServerTick() {
         stunnedTime++;
+        BlockPos centre = this.dragon.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, new BlockPos(0, 0, 0));
+        if (this.dragon.distanceToSqr(centre.getX(), centre.getY(), centre.getZ()) >= 6400) {
+            this.dragon.getPhaseManager().setPhase(EnderDragonPhase.HOLDING_PATTERN);
+            EnhancedEndFightMain.LOGGER.warn("Dragon is stunned too far from exit portal. Resetting dragon...");
+
+        }
         if (this.currentPath != null) {
             this.currentPath = null;
         }
@@ -52,7 +59,19 @@ public class DragonLongStunnedPhase extends AbstractDragonPhaseInstance {
                     blockPos
             );
         }
-        if (this.dragon.getHealth() <= 10.0f && this.closeToTargetPos()) {
+        if (this.closeToTargetPos()) {
+            BlockPos blockPos2 = this.dragon.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, this.dragon.blockPosition());
+            if (blockPos2.getY() <= 20) {
+                blockPos2 = blockPos2.atY(20);
+            }
+            this.targetLocation = Vec3.atBottomCenterOf(
+                    blockPos2
+            );
+        }
+        if (this.closerToTargetPos() && this.dragon.getPhaseManager().getCurrentPhase() != EnderDragonPhase.DYING) {
+            this.dragon.getPhaseManager().setPhase(ModEnderDragonPhases.LONG_STUNNED_SITTING);
+        }
+        if (this.dragon.getHealth() <= 10.0f && this.closerToTargetPos() && this.dragon.getPhaseManager().getCurrentPhase() != EnderDragonPhase.DYING) {
             this.dragon.getPhaseManager().setPhase(ModEnderDragonPhases.TENACITY);
         }
         if (this.stunnedTime >= STUNNED_DURATION) {
@@ -70,7 +89,11 @@ public class DragonLongStunnedPhase extends AbstractDragonPhaseInstance {
 
     private boolean closeToTargetPos() {
         if (this.targetLocation == null) return false;
-        return this.dragon.position().distanceToSqr(this.targetLocation) <= 12;
+        return this.dragon.position().distanceToSqr(this.targetLocation) <= 64;
+    }
+    private boolean closerToTargetPos() {
+        if (this.targetLocation == null) return false;
+        return this.dragon.position().distanceToSqr(this.targetLocation) <= 9;
     }
 
     @Override
@@ -82,7 +105,7 @@ public class DragonLongStunnedPhase extends AbstractDragonPhaseInstance {
 
     @Override
     public float getFlySpeed() {
-        return 7.0f;
+        return 4.0f;
     }
 
     @Override
@@ -98,5 +121,10 @@ public class DragonLongStunnedPhase extends AbstractDragonPhaseInstance {
     @Override
     public EnderDragonPhase<? extends DragonPhaseInstance> getPhase() {
         return ModEnderDragonPhases.LONG_STUNNED;
+    }
+
+    @Override
+    public boolean shouldCancelMeleeDamage() {
+        return true;
     }
 }

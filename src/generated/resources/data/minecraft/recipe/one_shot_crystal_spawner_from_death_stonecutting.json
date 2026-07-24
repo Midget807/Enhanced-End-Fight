@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "enhancedendfight:death"
+  },
+  "result": {
+    "count": 1,
+    "id": "enhancedendfight:one_shot_crystal_spawner"
+  }
+}

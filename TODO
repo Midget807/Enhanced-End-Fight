@@ -1,5 +1,2 @@
 //todo one shot kill particle
-//todo melee attack phase
-//todo no melee dragon damage for certain phases -> use an interface for an abstract custom class then have specific classes override for noMeleeDamage
 //todo damage resistance phases
-//todo sequence phases

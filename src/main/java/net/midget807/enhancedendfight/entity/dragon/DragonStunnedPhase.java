@@ -12,7 +12,7 @@ import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-public class DragonStunnedPhase extends AbstractDragonPhaseInstance {
+public class DragonStunnedPhase extends AbstractDragonPhaseInstance implements NoMeleeDamage {
     public static final int STUNNED_DURATION = 200;
     private static final TargetingConditions CHARGE_TARGETING = TargetingConditions.forCombat().range(150.0);
     @Nullable
@@ -51,7 +51,19 @@ public class DragonStunnedPhase extends AbstractDragonPhaseInstance {
                     blockPos
             );
         }
-        if (this.dragon.getHealth() <= 0 && this.closeToTargetPos()) {
+        if (this.closeToTargetPos()) {
+            BlockPos blockPos2 = this.dragon.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, this.dragon.blockPosition());
+            if (blockPos2.getY() <= 20) {
+                blockPos2 = blockPos2.atY(20);
+            }
+            this.targetLocation = Vec3.atBottomCenterOf(
+                    blockPos2
+            );
+        }
+        if (this.closerToTargetPos() && this.dragon.getPhaseManager().getCurrentPhase() != EnderDragonPhase.DYING) {
+            this.dragon.getPhaseManager().setPhase(ModEnderDragonPhases.STUNNED_SITTING);
+        }
+        if (this.dragon.getHealth() <= 0 && this.closerToTargetPos() && this.dragon.getPhaseManager().getCurrentPhase() != EnderDragonPhase.DYING) {
             this.dragon.getPhaseManager().setPhase(ModEnderDragonPhases.TENACITY);
         }
         if (this.stunnedTime >= STUNNED_DURATION) {
@@ -67,9 +79,14 @@ public class DragonStunnedPhase extends AbstractDragonPhaseInstance {
         }
     }
 
+
     private boolean closeToTargetPos() {
         if (this.targetLocation == null) return false;
-        return this.dragon.position().distanceToSqr(this.targetLocation) <= 8;
+        return this.dragon.position().distanceToSqr(this.targetLocation) <= 64;
+    }
+    private boolean closerToTargetPos() {
+        if (this.targetLocation == null) return false;
+        return this.dragon.position().distanceToSqr(this.targetLocation) <= 9;
     }
 
     @Override
@@ -97,5 +114,10 @@ public class DragonStunnedPhase extends AbstractDragonPhaseInstance {
     @Override
     public EnderDragonPhase<DragonStunnedPhase> getPhase() {
         return ModEnderDragonPhases.STUNNED;
+    }
+
+    @Override
+    public boolean shouldCancelMeleeDamage() {
+        return true;
     }
 }

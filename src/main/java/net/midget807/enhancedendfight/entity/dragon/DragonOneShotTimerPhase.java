@@ -1,5 +1,6 @@
 package net.midget807.enhancedendfight.entity.dragon;
 
+import net.midget807.enhancedendfight.EnhancedEndFightMain;
 import net.midget807.enhancedendfight.entity.OneShotPhaseCrystal;
 import net.midget807.enhancedendfight.registry.ModEnderDragonPhases;
 import net.midget807.enhancedendfight.util.injector.OneShotPhaseCrystals;
@@ -37,6 +38,7 @@ public class DragonOneShotTimerPhase extends AbstractDragonOneShotPhase{
     private int tickDelta;
     @Nullable
     private Player targetToKill;
+    private int crystalsDestroyed;
     private final TargetingConditions scanTargeting;
     private final ServerBossEvent oneShotEvent = new ServerBossEvent(Component.empty(), BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.PROGRESS);
 
@@ -60,19 +62,38 @@ public class DragonOneShotTimerPhase extends AbstractDragonOneShotPhase{
                 this.oneShotEvent.removePlayer(serverPlayer);
             }
         }
+        if (this.dragon.getServer() != null) {
+            List<ServerPlayer> serverWidePlayers = this.dragon.getServer().getPlayerList().getPlayers();
+            List<ServerPlayer> endDimPlayers = new ArrayList<>();
+            for (Player player : this.dragon.level().players()) {
+                ServerPlayer serverPlayer = (ServerPlayer) player;
+                endDimPlayers.add(serverPlayer);
+            }
+            for (ServerPlayer serverPlayer : serverWidePlayers) {
+                if (!endDimPlayers.contains(serverPlayer) && alreadyAddedToEvent.contains(serverPlayer)) {
+                    this.oneShotEvent.removePlayer(serverPlayer);
+                }
+            }
+        }
         targetToKill = this.dragon
                 .level()
                 .getNearestPlayer(this.scanTargeting, this.dragon, this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
         if (this.targetToKill == null || !this.dragon.level().players().contains(this.targetToKill)) {
             this.rescanForTarget();
-            System.out.println("rescanning");
+            if (tickDelta % 20 == 0) {
+                EnhancedEndFightMain.LOGGER.info("Rescanning for target to kill (Scanning every tick)");
+            }
         }
         if (targetToKill != null) {
             this.targetToKill.addEffect(new MobEffectInstance(MobEffects.GLOWING, 10, 0, false, false, false));
         }
 
-        if (this.timer >= 20 && this.dragon.getDragonFight() != null && ((OneShotPhaseCrystals) this.dragon.getDragonFight()).getOneShotPhaseCrystals().isEmpty()) {
+        if (this.timer >= 20 && this.dragon.getDragonFight() != null && ((OneShotPhaseCrystals) this.dragon.getDragonFight()).getOneShotPhaseCrystals().isEmpty() && this.dragon.getPhaseManager().getCurrentPhase() != EnderDragonPhase.DYING) {
             this.dragon.getPhaseManager().setPhase(ModEnderDragonPhases.LONG_STUNNED);
+            /*if (this.crystalsDestroyed >= 4) {
+            } else {
+                this.dragon.getPhaseManager().setPhase(EnderDragonPhase.TAKEOFF);
+            }*/
             if (this.dragon.getDragonFight() != null) {
                 ((OneShotPhaseCrystals) this.dragon.getDragonFight()).clearOneShotPhaseCrystals();
             }
@@ -95,11 +116,6 @@ public class DragonOneShotTimerPhase extends AbstractDragonOneShotPhase{
         if (tickDelta % 20 == 0) {
             tickDelta = 0;
         }
-        if (targetToKill == null) {
-            System.out.println("targetToKill is null");
-        } else  {
-            System.out.println("targetToKill: " + targetToKill.getName());
-        }
     }
 
     private void rescanForTarget() {
@@ -111,6 +127,8 @@ public class DragonOneShotTimerPhase extends AbstractDragonOneShotPhase{
     @Override
     public void begin() {
         this.timer = 0;
+        this.crystalsDestroyed = 0;
+        targetToKill = null;
         EndDragonFight fight = this.dragon.getDragonFight();
         if (fight != null) {
             if (!this.dragon.level().isClientSide) {
@@ -176,6 +194,10 @@ public class DragonOneShotTimerPhase extends AbstractDragonOneShotPhase{
         EndDragonFight fight = this.dragon.getDragonFight();
         if (fight != null) {
             ((OneShotPhaseCrystals) fight).updateOneShotPhaseCrystals();
+        }
+        if (crystal instanceof OneShotPhaseCrystals) {
+            this.crystalsDestroyed++;
+            EnhancedEndFightMain.LOGGER.info("Number of Crystals Destroyed: {}", this.crystalsDestroyed);
         }
     }
 

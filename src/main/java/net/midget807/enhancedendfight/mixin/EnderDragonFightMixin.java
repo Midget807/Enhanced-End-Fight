@@ -68,7 +68,6 @@ public abstract class EnderDragonFightMixin implements OneShotPhaseCrystals {
             buffer.addAll(oneShotCrystalPresentAtTower);
         }
         this.oneShotPhaseCrystals = buffer;
-        System.out.println("crystalSize: " + this.oneShotPhaseCrystals.size());
     }
 
     @Override

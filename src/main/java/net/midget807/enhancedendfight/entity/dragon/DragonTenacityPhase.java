@@ -10,8 +10,8 @@ import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseIns
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.phys.Vec3;
 
-public class DragonTenacityPhase extends AbstractDragonPhaseInstance {
-    public static final int STUNNED_DURATION = 100;
+public class DragonTenacityPhase extends AbstractDragonPhaseInstance implements NoMeleeDamage {
+    public static final int STUNNED_DURATION = 200;
     private static final TargetingConditions CHARGE_TARGETING = TargetingConditions.forCombat().range(150.0);
     private final TargetingConditions scanTargeting;
     private int stunnedTime;
@@ -20,6 +20,11 @@ public class DragonTenacityPhase extends AbstractDragonPhaseInstance {
     public DragonTenacityPhase(EnderDragon dragon) {
         super(dragon);
         this.scanTargeting = TargetingConditions.forCombat().range(20.0).selector(p_352809_ -> Math.abs(p_352809_.getY() - dragon.getY()) <= 10.0);
+    }
+
+    @Override
+    public boolean isSitting() {
+        return true;
     }
 
     @Override
@@ -55,5 +60,10 @@ public class DragonTenacityPhase extends AbstractDragonPhaseInstance {
     @Override
     public EnderDragonPhase<DragonTenacityPhase> getPhase() {
         return ModEnderDragonPhases.TENACITY;
+    }
+
+    @Override
+    public boolean shouldCancelMeleeDamage() {
+        return true;
     }
 }

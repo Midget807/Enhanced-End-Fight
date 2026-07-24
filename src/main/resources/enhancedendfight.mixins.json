@@ -3,7 +3,12 @@
   "package": "net.midget807.enhancedendfight.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "AbstractDragonPhaseInstanceMixin",
+    "AreaEffectCloudMixin",
     "BossEventMixin",
+    "DragonFireballMixin",
+    "DragonHoldingPatternPhaseMixin",
+    "DragonSittingFlamingPhaseMixin",
     "EnderDragonFightMixin",
     "EnderDragonMixin",
     "LivingEntityMixin",
