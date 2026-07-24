@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_diamond": {
+    "has_command_block": {
       "conditions": {
         "items": [
           {
-            "items": "minecraft:diamond"
+            "items": "minecraft:command_block"
           }
         ]
       },
@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:charge_player_from_diamond_stonecutting"
+        "recipe": "minecraft:one_shot_target_spawner_from_command_block_stonecutting"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -21,12 +21,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_diamond"
+      "has_command_block"
     ]
   ],
   "rewards": {
     "recipes": [
-      "minecraft:charge_player_from_diamond_stonecutting"
+      "minecraft:one_shot_target_spawner_from_command_block_stonecutting"
     ]
   }
 }

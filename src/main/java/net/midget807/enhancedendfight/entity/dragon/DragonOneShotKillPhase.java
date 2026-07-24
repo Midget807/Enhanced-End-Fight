@@ -31,8 +31,13 @@ public class DragonOneShotKillPhase extends AbstractDragonOneShotPhase{
         if (this.particleTimeSync > PARTICLE_TIME_SYNC || targetToKill == null) {
             this.dragon.getPhaseManager().setPhase(EnderDragonPhase.TAKEOFF);
         }
-        if (this.targetToKill != null && this.particleTimeSync == PARTICLE_TIME_SYNC) {
-            targetToKill.hurt(ModDamageTypes.oneShot(this.targetToKill, this.dragon), Float.MAX_VALUE);
+        if (/*this.targetToKill != null && */this.particleTimeSync == PARTICLE_TIME_SYNC) {
+            //targetToKill.hurt(ModDamageTypes.oneShot(this.targetToKill, this.dragon), Float.MAX_VALUE);
+            this.dragon.level().players().forEach(player -> {
+               if (player.distanceTo(this.dragon) <= 400.0) {
+                   targetToKill.hurt(ModDamageTypes.oneShot(this.targetToKill, this.dragon), Float.MAX_VALUE);
+               }
+            });
         }
     }
 

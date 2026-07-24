@@ -19,7 +19,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
     @Override
     protected void buildRecipes(RecipeOutput recipeOutput) {
         ModItems.REGISTERED.forEach((item) -> {
-            stonecutterResultFromBase(recipeOutput, RecipeCategory.MISC, item, Items.DIAMOND);
+            stonecutterResultFromBase(recipeOutput, RecipeCategory.MISC, item, Items.COMMAND_BLOCK);
             ModItems.REGISTERED.forEach((item2) -> {
                if (!item.equals(item2)) {
                    stonecutterResultFromBase(recipeOutput, RecipeCategory.MISC, item, item2);

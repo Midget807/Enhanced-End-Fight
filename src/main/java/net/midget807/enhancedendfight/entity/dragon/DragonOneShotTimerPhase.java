@@ -2,6 +2,7 @@ package net.midget807.enhancedendfight.entity.dragon;
 
 import net.midget807.enhancedendfight.EnhancedEndFightMain;
 import net.midget807.enhancedendfight.entity.OneShotPhaseCrystal;
+import net.midget807.enhancedendfight.registry.ModDamageTypes;
 import net.midget807.enhancedendfight.registry.ModEnderDragonPhases;
 import net.midget807.enhancedendfight.util.injector.OneShotPhaseCrystals;
 import net.minecraft.ChatFormatting;
@@ -105,13 +106,18 @@ public class DragonOneShotTimerPhase extends AbstractDragonOneShotPhase{
                 ((OneShotPhaseCrystals) this.dragon.getDragonFight()).clearOneShotPhaseCrystals();
             }
             this.oneShotEvent.removeAllPlayers();
-            this.dragon.getPhaseManager().getPhase(ModEnderDragonPhases.ONE_SHOT_KILL).setTargetToKill(targetToKill);
+            //this.dragon.getPhaseManager().getPhase(ModEnderDragonPhases.ONE_SHOT_KILL).setTargetToKill(targetToKill);
             this.dragon.getPhaseManager().setPhase(ModEnderDragonPhases.ONE_SHOT_KILL);
         }
         if (tickDelta == 10) {
-            if (this.targetToKill != null) {
+            /*if (this.targetToKill != null) {
                 this.targetToKill.displayClientMessage(Component.literal("you are going to die").withStyle(ChatFormatting.BOLD).withStyle(ChatFormatting.RED), true);
-            }
+            }*/
+            this.dragon.level().players().forEach(player -> {
+                if (player.distanceTo(this.dragon) <= 400.0) {
+                    player.displayClientMessage(Component.literal("you are going to die").withStyle(ChatFormatting.BOLD).withStyle(ChatFormatting.RED), true);
+                }
+            });
         }
         if (tickDelta % 20 == 0) {
             tickDelta = 0;
