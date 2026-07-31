@@ -37,6 +37,7 @@ public class ModDamageTypes {
         public static final TagKey<DamageType> RANGED = create("ranged");
         public static final TagKey<DamageType> MELEE = create("melee");
         public static final TagKey<DamageType> MAGIC = create("magic");
+        public static final TagKey<DamageType> ALL = create("all");
 
         private static TagKey<DamageType> create(String name) {
             return TagKey.create(Registries.DAMAGE_TYPE, EnhancedEndFightMain.id(name));

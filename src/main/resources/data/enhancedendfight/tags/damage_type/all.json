@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "#enhancedendfight:melee",
+    "#enhancedendfight:ranged",
+    "#enhancedendfight:magic"
+  ]
+}

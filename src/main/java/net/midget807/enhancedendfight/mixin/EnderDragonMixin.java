@@ -4,10 +4,13 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.midget807.enhancedendfight.EnhancedEndFightMain;
+import net.midget807.enhancedendfight.entity.dragon.DamageResistanceTypes;
 import net.midget807.enhancedendfight.entity.dragon.NoMeleeDamage;
 import net.midget807.enhancedendfight.mixin.access.EndDragonFightAccessor;
 import net.midget807.enhancedendfight.network.s2c.packet.TenacityBossBarProgressPacket;
+import net.midget807.enhancedendfight.registry.ModDamageTypes;
 import net.midget807.enhancedendfight.registry.ModEnderDragonPhases;
+import net.midget807.enhancedendfight.util.injector.DamageResistance;
 import net.midget807.enhancedendfight.util.injector.TenacityData;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -35,7 +38,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.end.EndDragonFight;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.checkerframework.checker.units.qual.A;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -50,10 +52,11 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 @Mixin(EnderDragon.class)
-public abstract class EnderDragonMixin extends Mob implements Enemy, TenacityData {
+public abstract class EnderDragonMixin extends Mob implements Enemy, TenacityData, DamageResistance {
     @Unique
     private static final ResourceLocation MAX_HEALTH_MODIFIER_ID = EnhancedEndFightMain.id("tenacity_damage");
     private static final EntityDataAccessor<Float> TENACITY = SynchedEntityData.defineId(EnderDragon.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<String> DAMAGE_RESISTANCE = SynchedEntityData.defineId(EnderDragon.class, EntityDataSerializers.STRING);
 
     @Override
     public void setTenacityData(float value) {
@@ -64,15 +67,24 @@ public abstract class EnderDragonMixin extends Mob implements Enemy, TenacityDat
             }
         }
     }
-
     @Override
     public float getTenacityData() {
         return this.getEntityData().get(TENACITY);
     }
 
+    @Override
+    public void setResistanceType(DamageResistanceTypes resistanceType) {
+        this.getEntityData().set(DAMAGE_RESISTANCE, resistanceType.getSerializedName());
+    }
+    @Override
+    public DamageResistanceTypes getResistanceType() {
+        return DamageResistanceTypes.valueOf(this.getEntityData().get(DAMAGE_RESISTANCE));
+    }
+
     @Inject(method = "defineSynchedData", at = @At("HEAD"))
     private void enhancedEndFight$addCustomSyncedData(SynchedEntityData.Builder builder, CallbackInfo ci) {
         builder.define(TENACITY, 0.0f);
+        builder.define(DAMAGE_RESISTANCE, DamageResistanceTypes.NONE.getSerializedName());
     }
 
     @Shadow
@@ -139,6 +151,22 @@ public abstract class EnderDragonMixin extends Mob implements Enemy, TenacityDat
             if (this.getHealth() <= 0 && dragonPhaseInstance != ModEnderDragonPhases.STUNNED) {
                 this.phaseManager.setPhase(ModEnderDragonPhases.STUNNED);
             }
+        }
+        this.getPhaseManager().getPhase(ModEnderDragonPhases.PASSIVE_TICKING).doServerTick();
+    }
+
+    @ModifyArg(method = "reallyHurt", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Mob;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z"), index = 1)
+    private float enhancedEndFright$modifyHurtAmountByResistance(float amount, @Local(argsOnly = true) DamageSource damageSource) {
+        if (this.getResistanceType() == DamageResistanceTypes.MELEE && damageSource.is(ModDamageTypes.Tags.MELEE)) {
+            return 0;
+        } else if (this.getResistanceType() == DamageResistanceTypes.RANGED && damageSource.is(ModDamageTypes.Tags.RANGED)) {
+            return 0;
+        } else if (this.getResistanceType() == DamageResistanceTypes.MAGIC && damageSource.is(ModDamageTypes.Tags.MAGIC)) {
+            return 0;
+        } else if (this.getResistanceType() == DamageResistanceTypes.ALL && damageSource.is(ModDamageTypes.Tags.ALL)) {
+            return amount / 4;
+        } else {
+            return amount;
         }
     }
 

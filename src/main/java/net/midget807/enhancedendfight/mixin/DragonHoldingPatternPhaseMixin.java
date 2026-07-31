@@ -60,7 +60,7 @@ public abstract class DragonHoldingPatternPhaseMixin extends AbstractDragonPhase
 
     @Inject(method = "findNewTarget", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;getNearestPlayer(Lnet/minecraft/world/entity/ai/targeting/TargetingConditions;Lnet/minecraft/world/entity/LivingEntity;DDD)Lnet/minecraft/world/entity/player/Player;"), cancellable = true)
     private void enhancedEndFight$addCustomPhases(CallbackInfo ci, @Local int crystals) {
-        if (this.dragon.getRandom().nextInt(crystals + 3) == 0) {
+        if (this.dragon.getRandom().nextInt(((int) crystals / 2) + 3) == 0) {
             this.dragon.getPhaseManager().setPhase(ModEnderDragonPhases.ONE_SHOT_APPROACH);
             ci.cancel();
             return;

@@ -8,6 +8,8 @@ import net.neoforged.bus.api.IEventBus;
 
 public class ModEnderDragonPhases {
     //Completion: 9/10
+    public static final EnderDragonPhase<DragonPassiveTickingPhase> PASSIVE_TICKING = create(DragonPassiveTickingPhase.class, "PassiveTicking");
+    //Completion: 9/10
     public static final EnderDragonPhase<DragonOneShotApproachPhase> ONE_SHOT_APPROACH = create(DragonOneShotApproachPhase.class, "OneShotApproach");
     //Completion: 9/10
     public static final EnderDragonPhase<DragonOneShotLandingPhase> ONE_SHOT = create(DragonOneShotLandingPhase.class, "OneShot");
@@ -33,6 +35,10 @@ public class ModEnderDragonPhases {
     public static final EnderDragonPhase<DragonTenacityPhase> TENACITY = create(DragonTenacityPhase.class, "Tenacity");
     //Completion: 9/10
     public static final EnderDragonPhase<DragonChargePlayerCustomPhase> CHARGE_PLAYER = create(DragonChargePlayerCustomPhase.class, "ChargePlayerCustom");
+    //Completion: 0/10
+    public static final EnderDragonPhase<DragonDamageResistancePhase> DAMAGE_RESISTANCE = create(DragonDamageResistancePhase.class, "DamageResistance");
+    //Completion: 0/10
+    public static final EnderDragonPhase<DragonDamageResistancePhase> LASER = create(DragonDamageResistancePhase.class, "Laser");
 
     public static <T extends DragonPhaseInstance> EnderDragonPhase<T> create(Class<T> phase, String name) {
         return EnderDragonPhaseAccessor.invokeCreate(phase, name);
